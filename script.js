@@ -6,10 +6,10 @@ const appTemplates = {
         <h2 style="margin-bottom:8px;">ABOUT Turbo OS</h2>
         <p>Welcome to Turbo OS, a lightweight Web Operating System environment built with web technologies.</p>
         
-        <div class="bracket-box">[Bollineni Preetham]</div>
-        <div class="bracket-box">[V - 1.0 ]</div>
-        <div class="bracket-box">[This OS is designed to run on Web and performs Turbo fast.]</div>
-        <div class="bracket-box">[All Charecters are reserved to Turbo Corporation]</div>
+        <div class="bracket-box">Bollineni Preetham</div>
+        <div class="bracket-box">V - 1.0</div>
+        <div class="bracket-box">This OS is designed to run on Web and performs Turbo fast.</div>
+        <div class="bracket-box">All Charecters are reserved to Turbo Corporation</div>
     `,
     calculator: `
         <input type="text" id="calc-screen" class="calc-display" readonly value="0">
