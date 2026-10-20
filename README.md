@@ -13,3 +13,5 @@
 ## Applications Included
 * **Clock**
 * **Media Player**
+* **Turbo Browser**
+* **Calculator**
