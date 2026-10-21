@@ -2,6 +2,8 @@
 
 **Welcome to my OS called Turbo OS.**
 
+<img width="1365" height="644" alt="5" src="https://github.com/user-attachments/assets/539ddddf-80c6-472c-b970-db4f6a9e04d6" />
+
 **This OS is built on part of** ***Star Dance Hack Club Challenge***
 
 ## Visit My OS
