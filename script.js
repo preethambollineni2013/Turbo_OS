@@ -1,15 +1,16 @@
 let highestZIndex = 100;
 let windowCount = 0;
 
+// Application Content Templates
 const appTemplates = {
     about: `
         <h2 style="margin-bottom:8px;">ABOUT Turbo OS</h2>
         <p>Welcome to Turbo OS, a lightweight Web Operating System environment built with web technologies.</p>
         
-        <div class="bracket-box">Bollineni Preetham</div>
-        <div class="bracket-box">V - 1.0</div>
-        <div class="bracket-box">This OS is designed to run on Web and performs Turbo fast.</div>
-        <div class="bracket-box">All Charecters are reserved to Turbo Corporation</div>
+        <div class="bracket-box">[ ENTER YOUR NAME / AUTHOR HERE ]</div>
+        <div class="bracket-box">[ ENTER VERSION HERE - e.g., v1.0.0 ]</div>
+        <div class="bracket-box">[ ENTER DESCRIPTION HERE - e.g., Personal Web Dashboard ]</div>
+        <div class="bracket-box">[ ENTER COPYRIGHT / LICENSE HERE ]</div>
     `,
     calculator: `
         <input type="text" id="calc-screen" class="calc-display" readonly value="0">
@@ -63,17 +64,17 @@ const appTemplates = {
         </div>
     `,
     browser: `
-        <div class="browser-nav">
-            <input type="text" id="browser-url-input" class="browser-input" value="https://duckduckgo.com/?kae=t" placeholder="Search or type URL...">
-            <button class="browser-btn" onclick="navigateBrowser(this)">Go</button>
-            <button class="browser-btn-ext" onclick="openExternal('google')">Google ↗</button>
-            <button class="browser-btn-ext" onclick="openExternal('bing')">Bing ↗</button>
+        <div class="browser-nav" style="display:flex; gap:6px; margin-bottom:8px;">
+            <input type="text" id="browser-url-input" class="browser-input" value="https://html.duckduckgo.com/html/" placeholder="Search or enter site URL..." style="flex:1;">
+            <button class="browser-btn" onclick="navigateBrowser(this)">Search / Go</button>
+            <button class="browser-btn" style="background:#475569;" onclick="setSearchEngine(this, 'ddg')">DuckDuckGo</button>
+            <button class="browser-btn" style="background:#475569;" onclick="setSearchEngine(this, 'wikipedia')">Wikipedia</button>
         </div>
-        <iframe class="browser-frame" src="https://duckduckgo.com/html/"></iframe>
+        <iframe class="browser-frame" src="https://html.duckduckgo.com/html/" style="width:100%; height:calc(100% - 45px); border:1px solid rgba(255,255,255,0.2); border-radius:4px; background:#ffffff;"></iframe>
     `
 };
 
-
+// System Clock Taskbar Sync
 function updateTrayClock() {
     const now = new Date();
     document.getElementById('tray-time').innerText = now.toLocaleTimeString();
@@ -87,13 +88,13 @@ function updateTrayClock() {
 setInterval(updateTrayClock, 1000);
 updateTrayClock();
 
-
+// Toggle Start Menu
 function toggleStartMenu() {
     const startMenu = document.getElementById('start-menu');
     startMenu.classList.toggle('hidden');
 }
 
-
+// Window Management Functions
 function openApp(appName) {
     windowCount++;
     const winId = `win-${appName}-${windowCount}`;
@@ -165,7 +166,7 @@ function maximizeWindow(winId) {
     if (win) win.classList.toggle('maximized');
 }
 
-
+// Taskbar Tabs
 function addTaskbarTab(winId, title) {
     const taskbarApps = document.getElementById('taskbar-apps');
     const tab = document.createElement('div');
@@ -186,7 +187,7 @@ function addTaskbarTab(winId, title) {
     taskbarApps.appendChild(tab);
 }
 
-
+// Dragging Logic
 function makeDraggable(win) {
     const header = win.querySelector('.window-header');
     let isDragging = false;
@@ -211,6 +212,7 @@ function makeDraggable(win) {
     });
 }
 
+// Calculator Logic
 function appendCalc(val) {
     const screen = document.getElementById('calc-screen');
     if (screen.value === '0') screen.value = '';
@@ -230,6 +232,7 @@ function computeCalc() {
     }
 }
 
+// Stopwatch Logic
 let stopwatchTimer = null;
 let stopwatchSeconds = 0;
 
@@ -258,24 +261,37 @@ function resetStopwatch() {
     if (disp) disp.innerText = "00:00:00";
 }
 
-
+// Browser Helpers
 function navigateBrowser(btn) {
     const nav = btn.parentElement;
     const input = nav.querySelector('.browser-input');
     const iframe = nav.parentElement.querySelector('.browser-frame');
-    let url = input.value;
+    let query = input.value.trim();
 
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        url = 'https://duckduckgo.com/html/?q=' + encodeURIComponent(url);
+    if (!query) return;
+
+    if (query.startsWith('http://') || query.startsWith('https://')) {
+        iframe.src = query;
+    } else {
+        iframe.src = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(query);
     }
-    iframe.src = url;
 }
 
-function openExternal(engine) {
-    if (engine === 'google') window.open('https://www.google.com', '_blank');
-    if (engine === 'bing') window.open('https://www.bing.com', '_blank');
+function setSearchEngine(btn, engine) {
+    const nav = btn.parentElement;
+    const input = nav.querySelector('.browser-input');
+    const iframe = nav.parentElement.querySelector('.browser-frame');
+
+    if (engine === 'ddg') {
+        input.value = "https://html.duckduckgo.com/html/";
+        iframe.src = "https://html.duckduckgo.com/html/";
+    } else if (engine === 'wikipedia') {
+        input.value = "https://en.m.wikipedia.org";
+        iframe.src = "https://en.m.wikipedia.org";
+    }
 }
 
+// Media Loader Helper
 function loadMedia() {
     const url = document.getElementById('media-url').value;
     const target = document.getElementById('media-player-target');
@@ -284,6 +300,7 @@ function loadMedia() {
     }
 }
 
+// Open "ABOUT Turbo OS" automatically at startup
 window.onload = () => {
     openApp('about');
 };
