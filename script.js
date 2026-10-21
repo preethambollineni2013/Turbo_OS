@@ -7,10 +7,10 @@ const appTemplates = {
         <h2 style="margin-bottom:8px;">ABOUT Turbo OS</h2>
         <p>Welcome to Turbo OS, a lightweight Web Operating System environment built with web technologies.</p>
         
-        <div class="bracket-box">[ ENTER YOUR NAME / AUTHOR HERE ]</div>
-        <div class="bracket-box">[ ENTER VERSION HERE - e.g., v1.0.0 ]</div>
-        <div class="bracket-box">[ ENTER DESCRIPTION HERE - e.g., Personal Web Dashboard ]</div>
-        <div class="bracket-box">[ ENTER COPYRIGHT / LICENSE HERE ]</div>
+        <div class="bracket-box">An Web OS designed to run in Web</div>
+        <div class="bracket-box">Turbo OS - V 1.0</div>
+        <div class="bracket-box">Designed and Made by Preetham</div>
+        <div class="bracket-box">All Rights of Charecters reserved.</div>
     `,
     calculator: `
         <input type="text" id="calc-screen" class="calc-display" readonly value="0">
