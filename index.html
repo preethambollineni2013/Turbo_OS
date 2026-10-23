@@ -3,64 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Turbo OS</title>
+    <title>Turbo OS Web Terminal</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div id="desktop">
-
-        <div class="desktop-icon-grid">
-            <div class="desktop-icon" onclick="openApp('about')">
-                <div class="icon-shape">ℹ️</div>
-                <div class="icon-label">About Turbo OS</div>
-            </div>
-            <div class="desktop-icon" onclick="openApp('browser')">
-                <div class="icon-shape">🌐</div>
-                <div class="icon-label">Turbo Browser</div>
-            </div>
-            <div class="desktop-icon" onclick="openApp('calculator')">
-                <div class="icon-shape calc-symbol-grid">
-                    <span>+</span><span>−</span>
-                    <span>×</span><span>÷</span>
-                </div>
-                <div class="icon-label">Calculator</div>
-            </div>
-            <div class="desktop-icon" onclick="openApp('clock')">
-                <div class="icon-shape">⏰</div>
-                <div class="icon-label">Clock App</div>
-            </div>
-            <div class="desktop-icon" onclick="openApp('media')">
-                <div class="icon-shape">🎵</div>
-                <div class="icon-label">Media Player</div>
-            </div>
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="title">TurboOS v0.1 - TTY1</span>
         </div>
-
-        <div id="windows-container"></div>
-    </div>
-
-    <div id="start-menu" class="hidden">
-        <div class="start-menu-header">
-            <strong>Turbo OS</strong>
+        <div id="terminal-body" class="terminal-body">
+            <div class="output">Welcome to Turbo OS Web Emulator. Type 'help' for commands.</div>
         </div>
-        <div class="start-menu-items">
-            <div class="start-item" onclick="openApp('about'); toggleStartMenu();">ℹ️ About Turbo OS</div>
-            <div class="start-item" onclick="openApp('browser'); toggleStartMenu();">🌐 Turbo Browser</div>
-            <div class="start-item" onclick="openApp('calculator'); toggleStartMenu();">🧮 Calculator</div>
-            <div class="start-item" onclick="openApp('clock'); toggleStartMenu();">⏰ Clock App</div>
-            <div class="start-item" onclick="openApp('media'); toggleStartMenu();">🎵 Media Player</div>
+        <div class="terminal-input-line">
+            <span class="prompt">turbo@os:~$ </span>
+            <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false">
         </div>
     </div>
-
-    <div id="taskbar">
-        <button id="start-btn" onclick="toggleStartMenu()">Turbo</button>
-        <div id="taskbar-apps"></div>
-        <div id="system-tray">
-            <div id="tray-time">00:00:00</div>
-            <div id="tray-date">00/00/0000</div>
-        </div>
-    </div>
-
     <script src="script.js"></script>
 </body>
 </html>
