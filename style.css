@@ -1,355 +1,84 @@
-/* Apply Navy Blue Palette and Comic Sans MS everywhere */
-* {
-    box-sizing: border-box;
+body {
+    background-color: #121212;
+    color: #00ff66;
+    font-family: 'Courier New', Courier, monospace;
     margin: 0;
     padding: 0;
-    font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif !important;
-    user-select: none;
-}
-
-body, html {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: #0a1128;
-    color: #ffffff;
-}
-
-/* Desktop Canvas */
-#desktop {
-    width: 100vw;
-    height: calc(100vh - 42px);
-    position: relative;
-    background: radial-gradient(circle at center, #111a3a 0%, #0a1128 100%);
-    padding: 15px;
-    overflow: hidden;
-}
-
-/* Vertical Icon Stack Layout */
-.desktop-icon-grid {
     display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 15px;
-    height: 100%;
-    width: fit-content;
-}
-
-.desktop-icon {
-    width: 90px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    cursor: pointer;
-    padding: 8px 4px;
-    border-radius: 8px;
-    transition: background 0.2s ease;
-}
-
-.desktop-icon:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.icon-shape {
-    width: 52px;
-    height: 52px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 12px;
-    display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    height: 100vh;
 }
 
-/* 2x2 Calculator Icon Layout (+ - / *) */
-.calc-symbol-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    width: 52px;
-    height: 52px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #ffffff;
-    align-items: center;
-    justify-items: center;
-    line-height: 1;
-}
-
-.icon-label {
-    margin-top: 6px;
-    font-size: 12px;
-    text-align: center;
-    color: #ffffff;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-    word-break: break-word;
-}
-
-/* Taskbar Styling */
-#taskbar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 42px;
-    background: #0f172a;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
-    z-index: 99999;
-}
-
-#start-btn {
-    background: #1e293b;
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 6px 16px;
-    font-weight: bold;
-    font-size: 14px;
+.terminal-window {
+    width: 700px;
+    height: 450px;
+    background-color: #0a0a0a;
+    border: 1px solid #333;
     border-radius: 6px;
-    cursor: pointer;
-}
-
-#start-btn:hover {
-    background: #334155;
-}
-
-#taskbar-apps {
-    display: flex;
-    gap: 6px;
-    flex: 1;
-    margin: 0 15px;
-    overflow-x: auto;
-}
-
-.taskbar-tab {
-    background: #1e293b;
-    color: #ffffff;
-    border: 1px solid rgba(255,255,255,0.2);
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.taskbar-tab.active {
-    background: #3b82f6;
-}
-
-#system-tray {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    font-size: 11px;
-    color: #ffffff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
 }
 
-/* Start Menu Popover */
-#start-menu {
-    position: fixed;
-    bottom: 48px;
-    left: 10px;
-    width: 220px;
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    z-index: 100000;
-    overflow: hidden;
-}
-
-#start-menu.hidden {
-    display: none;
-}
-
-.start-menu-header {
-    background: #1e293b;
-    padding: 10px;
-    font-size: 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.start-item {
-    padding: 10px;
-    font-size: 13px;
-    cursor: pointer;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.start-item:hover {
-    background: #334155;
-}
-
-/* Draggable App Windows */
-.app-window {
-    position: absolute;
-    width: 450px;
-    height: 380px;
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 8px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    min-width: 280px;
-    min-height: 200px;
-}
-
-.app-window.maximized {
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: calc(100vh - 42px) !important;
-    border-radius: 0;
-}
-
-.app-window.minimized {
-    display: none;
-}
-
-.window-header {
-    background: #1e293b;
+.terminal-header {
+    background-color: #1f1f1f;
     padding: 8px 12px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    cursor: move;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.window-title {
-    font-weight: bold;
-    font-size: 13px;
-    color: #ffffff;
-}
-
-.window-controls {
-    display: flex;
-    gap: 6px;
-}
-
-.win-btn {
-    width: 18px;
-    height: 18px;
+.dot {
+    height: 12px;
+    width: 12px;
     border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    font-size: 10px;
-    font-weight: bold;
-    color: #000;
+    display: inline-block;
+    margin-right: 6px;
 }
 
-.win-min { background: #facc15; }
-.win-max { background: #22c55e; }
-.win-close { background: #ef4444; }
+.red { background-color: #ff5f56; }
+.yellow { background-color: #ffbd2e; }
+.green { background-color: #27c93f; }
 
-.window-body {
-    flex: 1;
-    padding: 12px;
-    overflow: auto;
-    color: #ffffff;
-    user-select: text;
-}
-
-/* Application Component Styling */
-.calc-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.calc-display {
-    width: 100%;
-    height: 40px;
-    background: #1e293b;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #ffffff;
-    font-size: 20px;
-    text-align: right;
-    padding: 5px 10px;
-    border-radius: 6px;
-}
-
-.calc-btn {
-    padding: 12px;
-    background: #1e293b;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    font-size: 16px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.calc-btn:hover { background: #334155; }
-
-.browser-nav {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 10px;
-}
-
-.browser-input {
-    flex: 1;
-    background: #1e293b;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 6px 10px;
-    border-radius: 4px;
-}
-
-.browser-btn {
-    background: #3b82f6;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.browser-btn-ext {
-    background: #10b981;
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
+.title {
+    margin-left: 15px;
     font-size: 12px;
+    color: #888;
 }
 
-.browser-frame {
-    width: 100%;
-    height: calc(100% - 45px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    background: #ffffff;
+.terminal-body {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.4;
 }
 
-.clock-display {
-    font-size: 32px;
-    text-align: center;
-    margin: 15px 0;
+.output {
+    margin-bottom: 8px;
+    white-space: pre-wrap;
 }
 
-.media-container {
+.terminal-input-line {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
+    padding: 10px 15px;
+    background-color: #0d0d0d;
+    border-top: 1px solid #222;
 }
 
-.bracket-box {
-    background: #1e293b;
-    border: 1px dashed rgba(255,255,255,0.4);
-    padding: 8px;
-    margin: 8px 0;
-    border-radius: 4px;
-    font-family: monospace;
+.prompt {
+    color: #00ff66;
+    margin-right: 8px;
+}
+
+#command-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    outline: none;
+    flex: 1;
 }
