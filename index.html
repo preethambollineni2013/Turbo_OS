@@ -2,26 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Turbo OS Web Terminal</title>
+    <title>TurboOS</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="terminal-window">
-        <div class="terminal-header">
-            <span class="dot red"></span>
-            <span class="dot yellow"></span>
-            <span class="dot green"></span>
-            <span class="title">TurboOS v0.1 - TTY1</span>
+    <div id="desktop">
+        <div class="icons">
+            <div class="icn" onclick="launch('term')">💻<span>Terminal</span></div>
+            <div class="icn" onclick="launch('note')">📝<span>Notepad</span></div>
+            <div class="icn" onclick="launch('exp')">📁<span>Explorer</span></div>
+            <div class="icn" onclick="launch('brow')">🌐<span>Browser</span></div>
+            <div class="icn" onclick="launch('play')">🎵<span>Player</span></div>
+            <div class="icn" onclick="launch('calc')">🔢<span>Calc</span></div>
+            <div class="icn" onclick="launch('cal')">📅<span>Calendar</span></div>
+            <div class="icn" onclick="launch('about')">ℹ️<span>About OS</span></div>
         </div>
-        <div id="terminal-body" class="terminal-body">
-            <div class="output">Welcome to Turbo OS Web Emulator. Type 'help' for commands.</div>
+
+        <div id="win-area"></div>
+
+        <div id="taskbar">
+            <button id="s-btn" onclick="toggleMenu()">TurboOS</button>
+            <div id="t-apps"></div>
+            <div id="tray">
+                <span id="t-clock">00:00:00</span>
+                <span id="t-loc">Nellore, AP</span>
+            </div>
         </div>
-        <div class="terminal-input-line">
-            <span class="prompt">turbo@os:~$ </span>
-            <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false">
+
+        <div id="menu" class="hidden">
+            <div class="m-head">TurboOS v1.0.0</div>
+            <div class="m-list">
+                <div class="m-item" onclick="launch('term')">💻 Terminal</div>
+                <div class="m-item" onclick="launch('note')">📝 Notepad</div>
+                <div class="m-item" onclick="launch('exp')">📁 Explorer</div>
+                <div class="m-item" onclick="launch('brow')">🌐 Browser</div>
+                <div class="m-item" onclick="launch('play')">🎵 Media Player</div>
+                <div class="m-item" onclick="launch('calc')">🔢 Calculator</div>
+                <div class="m-item" onclick="launch('cal')">📅 Calendar</div>
+                <div class="m-item" onclick="launch('about')">ℹ️ About OS</div>
+                <div class="m-item reb" onclick="reboot()">🔄 Reboot</div>
+            </div>
+            <div class="m-footer">
+                <span id="m-date">Date</span>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>
 </body>
-</html>
+    </html>
+    
