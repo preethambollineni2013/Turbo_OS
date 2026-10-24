@@ -1,244 +1,302 @@
-setInterval(() => {
-    let now = new Date();
-    let clockEl = document.getElementById('t-clock');
-    let dateEl = document.getElementById('m-date');
-    if (clockEl) clockEl.innerText = now.toLocaleTimeString();
-    if (dateEl) dateEl.innerText = now.toLocaleDateString();
-}, 1000);
-
-let wins = {}, zIdx = 15;
-
-function toggleMenu() {
-    let m = document.getElementById('menu');
-    if (m) m.classList.toggle('hidden');
-}
-
-window.onclick = e => {
-    let m = document.getElementById('menu'), b = document.getElementById('s-btn');
-    if (m && b && !m.contains(e.target) && !b.contains(e.target)) {
-        m.classList.add('hidden');
-    }
+var apps = {
+  browser:{name:"Browser",icon:"🌐",w:520,h:430,build:browserApp},
+  terminal:{name:"Terminal",icon:"⌨️",w:480,h:320,build:terminalApp},
+  media:{name:"Media Player",icon:"🎞️",w:460,h:380,build:mediaApp},
+  calc:{name:"Calculator",icon:"🧮",w:290,h:400,build:calcApp},
+  calendar:{name:"Calendar",icon:"📅",w:340,h:350,build:calendarApp},
+  clock:{name:"Clock",icon:"🕒",w:300,h:340,build:clockApp},
+  about:{name:"About Me",icon:"👤",w:400,h:360,build:aboutApp}
 };
+var wins = [], z = 10, count = 0;
+var $ = function(id){ return document.getElementById(id); };
 
-function launch(id) {
-    let m = document.getElementById('menu');
-    if (m) m.classList.add('hidden');
+/* ---------- boot / reboot ---------- */
+function boot(msg){
+  var b = $("boot"), bar = $("bar"), n = 0;
+  b.style.display = "flex"; bar.style.width = "0";
+  $("bmsg").textContent = msg || "Starting...";
+  var t = setInterval(function(){
+    n += 5; bar.style.width = n + "%";
+    if(n > 40) $("bmsg").textContent = "Loading apps...";
+    if(n >= 100){ clearInterval(t); b.style.display = "none"; }
+  }, 100);
+}
+function reboot(){
+  $("menu").classList.remove("open");
+  while(wins.length) closeWin(wins[0]);
+  boot("Rebooting...");
+}
 
-    if (wins[id]) {
-        let w = document.getElementById('w-' + id);
-        if (w) {
-            w.classList.remove('min');
-            w.style.zIndex = ++zIdx;
-        }
-        return;
+/* ---------- top clock ---------- */
+function tick(){
+  var d = new Date();
+  $("t1").textContent = d.toLocaleTimeString();
+  $("t2").textContent = d.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+}
+setInterval(tick, 1000); tick();
+
+/* ---------- desktop icons + start menu ---------- */
+var rows = Math.max(1, Math.floor((innerHeight - 42 - 90) / 88));
+Object.keys(apps).forEach(function(k, n){
+  var a = apps[k];
+  var i = document.createElement("div");
+  i.className = "icon"; i.innerHTML = "<span>"+a.icon+"</span>"+a.name;
+  i.style.left = (14 + Math.floor(n / rows) * 84) + "px";
+  i.style.top = (78 + (n % rows) * 88) + "px";
+  i.onclick = function(){ if(i.dataset.moved !== "1") openApp(k); };
+  drag(i, i);
+  $("icons").appendChild(i);
+  var m = document.createElement("div");
+  m.className = "item"; m.textContent = a.icon + "  " + a.name;
+  m.onclick = function(){ openApp(k); };
+  $("mitems").appendChild(m);
+});
+$("turbo").onclick = function(e){ e.stopPropagation(); $("menu").classList.toggle("open"); };
+document.addEventListener("click", function(){ $("menu").classList.remove("open"); });
+
+/* ---------- window manager ---------- */
+function openApp(k){
+  $("menu").classList.remove("open");
+  var a = apps[k], w = {id:++count, key:k};
+  var el = document.createElement("div");
+  el.className = "win";
+  var off = (wins.length % 6) * 28;
+  el.style.width = Math.min(a.w, innerWidth - 20) + "px";
+  el.style.height = Math.min(a.h, innerHeight - 140) + "px";
+  el.style.left = Math.min(110 + off, Math.max(0, innerWidth - a.w - 10)) + "px";
+  el.style.top = (80 + off) + "px";
+  el.innerHTML = '<div class="bar"><b>'+a.icon+' '+a.name+'</b><span><button data-a="min">_</button><button data-a="x">X</button></span></div><div class="body"></div>';
+  $("desktop").appendChild(el);
+  w.el = el; w.body = el.querySelector(".body");
+  var btn = document.createElement("button");
+  btn.className = "btn task"; btn.textContent = a.icon + " " + a.name;
+  btn.onclick = function(){
+    if(el.style.display === "none"){ el.style.display = "flex"; focusWin(w); }
+    else if(el.classList.contains("active")){ el.style.display = "none"; btn.classList.remove("on"); }
+    else focusWin(w);
+  };
+  $("tasks").appendChild(btn); w.btn = btn;
+  wins.push(w);
+  el.addEventListener("pointerdown", function(){ focusWin(w); });
+  el.querySelector('[data-a="x"]').onclick = function(){ closeWin(w); };
+  el.querySelector('[data-a="min"]').onclick = function(){ el.style.display = "none"; btn.classList.remove("on"); el.classList.remove("active"); };
+  drag(el, el.querySelector(".bar"));
+  a.build(w.body, w);
+  focusWin(w);
+}
+function focusWin(w){
+  wins.forEach(function(x){ x.el.classList.remove("active"); x.btn.classList.remove("on"); });
+  w.el.classList.add("active"); w.btn.classList.add("on");
+  w.el.style.zIndex = ++z;
+}
+function closeWin(w){
+  w.el.remove(); w.btn.remove();
+  wins.splice(wins.indexOf(w), 1);
+}
+function drag(el, handle){
+  handle.addEventListener("pointerdown", function(e){
+    if(e.target.tagName === "BUTTON") return;
+    var dx = e.clientX - el.offsetLeft, dy = e.clientY - el.offsetTop;
+    el.dataset.moved = "0";
+    handle.setPointerCapture(e.pointerId);
+    function move(ev){
+      var x = ev.clientX - dx, y = ev.clientY - dy;
+      if(Math.abs(x - el.offsetLeft) + Math.abs(y - el.offsetTop) > 4) el.dataset.moved = "1";
+      var area = el.parentNode;
+      x = Math.min(Math.max(0, x), area.clientWidth - 50);
+      y = Math.min(Math.max(0, y), area.clientHeight - 30);
+      el.style.left = x + "px";
+      el.style.top = y + "px";
     }
-
-    let container = document.getElementById('win-area');
-    if (!container) return;
-
-    let w = document.createElement('div');
-    w.className = 'win';
-    w.id = 'w-' + id;
-    w.style.zIndex = ++zIdx;
-    w.style.top = (50 + Object.keys(wins).length * 28) + 'px';
-    w.style.left = (100 + Object.keys(wins).length * 28) + 'px';
-
-    let t = '', html = '';
-    if (id === 'term') {
-        t = 'Terminal';
-        html = '<div id="out" class="term-out">TurboOS v1.0.0. Type help.</div><div class="term-in"><span style="color:#238636">root@turbo:~$</span><input type="text" id="tin" autofocus autocomplete="off"></div>';
-    } else if (id === 'note') {
-        t = 'Notepad';
-        html = '<textarea class="note-ta" placeholder="Type notes here..."></textarea>';
-    } else if (id === 'exp') {
-        t = 'File Explorer';
-        html = '<div class="readme-box" style="cursor:pointer;" onclick="launch(\'about\')">📁 <strong>README.md</strong> — Click to open OS info & About details</div>';
-    } else if (id === 'brow') {
-        t = 'Web Browser';
-        html = '<div class="b-bar"><input type="text" id="burl" value="https://en.wikipedia.org"><button onclick="goWeb()">Go</button></div><iframe id="bfr" class="b-frame" src="https://en.wikipedia.org"></iframe>';
-    } else if (id === 'play') {
-        t = 'Media Player';
-        html = '<div class="p-box"><div class="p-row"><input type="text" id="mlink" placeholder="Direct media URL (.mp3 / .mp4)"><button onclick="loadMedia()">Play</button></div><div class="p-art">🎵</div><audio id="aud" controls></audio></div>';
-    } else if (id === 'calc') {
-        t = 'Calculator';
-        html = '<div class="c-grid"><input type="text" id="cs" class="c-disp" readonly value="0"><button class="c-btn" onclick="ck(7)">7</button><button class="c-btn" onclick="ck(8)">8</button><button class="c-btn" onclick="ck(9)">9</button><button class="c-btn op" onclick="ck(\'/\')">/</button><button class="c-btn" onclick="ck(4)">4</button><button class="c-btn" onclick="ck(5)">5</button><button class="c-btn" onclick="ck(6)">6</button><button class="c-btn op" onclick="ck(\'*\')">*</button><button class="c-btn" onclick="ck(1)">1</button><button class="c-btn" onclick="ck(2)">2</button><button class="c-btn" onclick="ck(3)">3</button><button class="c-btn op" onclick="ck(\'-\')">-</button><button class="c-btn" onclick="ck(0)">0</button><button class="c-btn" onclick="cc()">C</button><button class="c-btn op" onclick="ce()">=</button><button class="c-btn op" onclick="ck(\'+\')">+</button></div>';
-    } else if (id === 'cal') {
-        t = 'Calendar';
-        html = '<div style="margin-bottom:10px;font-weight:bold;color:#58a6ff;text-align:center;" id="cal-title"></div><div class="cal-grid"><div class="cal-hdr">Su</div><div class="cal-hdr">Mo</div><div class="cal-hdr">Tu</div><div class="cal-hdr">We</div><div class="cal-hdr">Th</div><div class="cal-hdr">Fr</div><div class="cal-hdr">Sa</div></div><div class="cal-grid" id="cal-days" style="margin-top:6px;"></div>';
-    } else if (id === 'about') {
-        t = 'About TurboOS';
-        html = '<div class="readme-box"><h2>TurboOS v1.0.0</h2><p><strong>Made by:</strong> Bollineni Preetham</p><p><strong>Copyright &copy; 2026 Bollineni Preetham. All rights reserved.</strong></p><hr style="border-color:#30363d;"><p>TurboOS is a custom-built operating system project showcasing low-level architecture and web desktop integration.</p></div>';
+    function up(){
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", up);
     }
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", up);
+  });
+}
 
-    w.innerHTML = `<div class="w-head" onmousedown="focusW('${id}')"><span>${t}</span><div class="w-ctrl"><button class="wb wb-m" onclick="minW('${id}')"></button><button class="wb wb-x" onclick="closeW('${id}')"></button></div></div><div class="w-body">${html}</div>`;
-    container.appendChild(w);
-    wins[id] = w;
+/* ---------- browser (Wikipedia) ---------- */
+function browserApp(box){
+  box.innerHTML = '<div class="row"><input type="text" placeholder="Search Wikipedia..."><button class="btn">Search</button></div><div class="view"><p>Type something above to search Wikipedia.</p></div>';
+  var inp = box.querySelector("input"), view = box.querySelector(".view");
+  var api = "https://en.wikipedia.org/w/api.php?origin=*&format=json&";
+  function search(){
+    var q = inp.value.trim(); if(!q) return;
+    view.innerHTML = "<p>Searching...</p>";
+    fetch(api + "action=query&list=search&srlimit=8&srsearch=" + encodeURIComponent(q))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var list = d.query.search; view.innerHTML = "";
+        if(!list.length){ view.innerHTML = "<p>No results found.</p>"; return; }
+        list.forEach(function(item){
+          var div = document.createElement("div"); div.className = "res";
+          var h = document.createElement("h4"); h.textContent = item.title;
+          var p = document.createElement("p"); p.textContent = item.snippet.replace(/<[^>]+>/g, "") + "...";
+          div.appendChild(h); div.appendChild(p);
+          div.onclick = function(){ openPage(item.title); };
+          view.appendChild(div);
+        });
+      })
+      .catch(function(){ view.innerHTML = "<p>Could not reach Wikipedia. Check your connection.</p>"; });
+  }
+  function openPage(title){
+    view.innerHTML = "<p>Loading...</p>";
+    fetch(api + "action=query&prop=extracts&explaintext=1&exintro=0&redirects=1&titles=" + encodeURIComponent(title))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var pages = d.query.pages, page = pages[Object.keys(pages)[0]];
+        view.innerHTML = '<div class="article"></div><div class="row"><button class="btn">Back to results</button></div>';
+        var art = view.querySelector(".article");
+        var h = document.createElement("h2"); h.textContent = page.title; art.appendChild(h);
+        (page.extract || "No text available.").split("\n").slice(0, 25).forEach(function(t){
+          if(!t.trim()) return;
+          var p = document.createElement("p"); p.textContent = t; art.appendChild(p);
+        });
+        view.querySelector(".btn").onclick = search;
+      })
+      .catch(function(){ view.innerHTML = "<p>Could not load that page.</p>"; });
+  }
+  box.querySelector(".btn").onclick = search;
+  inp.onkeydown = function(e){ if(e.key === "Enter") search(); };
+}
 
-    let tb = document.getElementById('t-apps');
-    if (tb) {
-        let tbBtn = document.createElement('button');
-        tbBtn.className = 't-btn act';
-        tbBtn.id = 'tb-' + id;
-        tbBtn.innerText = t;
-        tbBtn.onclick = () => {
-            let winElem = document.getElementById('w-' + id);
-            if (winElem) {
-                if (winElem.classList.contains('min')) {
-                    winElem.classList.remove('min');
-                    winElem.style.zIndex = ++zIdx;
-                } else {
-                    winElem.classList.add('min');
-                }
-            }
-        };
-        tb.appendChild(tbBtn);
+/* ---------- terminal ---------- */
+function terminalApp(box, w){
+  box.className += " term";
+  box.innerHTML = '<div class="out">Turbo OS Terminal. Type "help" for commands.\n</div><div class="line"><span>turbo&gt;</span><input type="text" spellcheck="false"></div>';
+  var out = box.querySelector(".out"), inp = box.querySelector("input");
+  var history = [], hi = 0;
+  function print(t){ out.textContent += t + "\n"; box.scrollTop = box.scrollHeight; }
+  var cmds = {
+    help:function(){ return "help      list commands\ndate      show date and time\nwhoami    show user\necho TEXT print text\nopen APP  open an app (" + Object.keys(apps).join(", ") + ")\nsysinfo   system details\nclear     clear the screen\nreboot    restart Turbo OS"; },
+    date:function(){ return new Date().toString(); },
+    whoami:function(){ return "preetham"; },
+    sysinfo:function(){ return "Turbo OS 1.0\nOpen windows: " + wins.length + "\nBrowser: " + navigator.userAgent.split(" ").pop(); },
+    clear:function(){ out.textContent = ""; return ""; },
+    reboot:function(){ setTimeout(reboot, 400); return "Rebooting..."; }
+  };
+  inp.onkeydown = function(e){
+    if(e.key === "ArrowUp" && history.length){ hi = Math.max(0, hi - 1); inp.value = history[hi]; return; }
+    if(e.key !== "Enter") return;
+    var line = inp.value.trim(); inp.value = "";
+    if(!line) return;
+    history.push(line); hi = history.length;
+    print("turbo> " + line);
+    var parts = line.split(" "), c = parts[0].toLowerCase(), arg = parts.slice(1).join(" ");
+    var res;
+    if(c === "echo") res = arg;
+    else if(c === "open"){
+      if(apps[arg.toLowerCase()]){ openApp(arg.toLowerCase()); res = "Opening " + arg; }
+      else res = "No app called '" + arg + "'.";
     }
-
-    if (id === 'term') {
-        let tin = document.getElementById('tin');
-        if (tin) {
-            tin.onkeydown = e => {
-                if (e.key === 'Enter') {
-                    let v = tin.value.trim();
-                    if (!v) return;
-                    let out = document.getElementById('out');
-                    if (out) {
-                        out.innerText += '\nroot@turbo:~$ ' + v;
-                        if (v === 'help') out.innerText += '\nCommands: help, clear, version, reboot, about';
-                        else if (v === 'clear') out.innerText = '';
-                        else if (v === 'version') out.innerText += '\nTurboOS v1.0.0';
-                        else if (v === 'about') out.innerText += '\nTurboOS made by Bollineni Preetham.';
-                        else if (v === 'reboot') reboot();
-                        else out.innerText += '\nCommand not found: ' + v;
-                        out.scrollTop = out.scrollHeight;
-                    }
-                    tin.value = '';
-                }
-            };
-        }
-    }
-
-    if (id === 'cal') {
-        buildCalendar();
-    }
-
-    makeDrag(w);
+    else if(cmds[c]) res = cmds[c]();
+    else res = "Unknown command: " + c;
+    if(res) print(res);
+  };
+  box.onclick = function(){ inp.focus(); };
+  setTimeout(function(){ inp.focus(); }, 50);
 }
 
-function focusW(id) {
-    let w = document.getElementById('w-' + id);
-    if (w) w.style.zIndex = ++zIdx;
+/* ---------- media player ---------- */
+function mediaApp(box){
+  box.innerHTML = '<div class="row"><input type="text" placeholder="Paste a direct link to a video or audio file"><button class="btn">Play</button></div><video controls></video><p style="font-size:12px;color:#999;margin-top:6px">Works with direct links (.mp4, .webm, .mp3, .ogg). Some sites block playback from other pages.</p>';
+  var inp = box.querySelector("input"), v = box.querySelector("video");
+  function play(){
+    var u = inp.value.trim(); if(!u) return;
+    v.src = u; v.play().catch(function(){});
+  }
+  box.querySelector(".btn").onclick = play;
+  inp.onkeydown = function(e){ if(e.key === "Enter") play(); };
 }
 
-function minW(id) {
-    let w = document.getElementById('w-' + id);
-    if (w) w.classList.add('min');
-}
-
-function closeW(id) {
-    let w = document.getElementById('w-' + id);
-    if (w) w.remove();
-    let tb = document.getElementById('tb-' + id);
-    if (tb) tb.remove();
-    delete wins[id];
-}
-
-function reboot() {
-    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#000;color:#00ff66;font-family:monospace;font-size:18px;">Rebooting TurboOS v1.0.0...</div>';
-    setTimeout(() => location.reload(), 1200);
-}
-
-function goWeb() {
-    let burl = document.getElementById('burl');
-    let bfr = document.getElementById('bfr');
-    if (burl && bfr) bfr.src = burl.value;
-}
-
-function loadMedia() {
-    let mlink = document.getElementById('mlink');
-    let aud = document.getElementById('aud');
-    if (mlink && aud && mlink.value.trim()) {
-        aud.src = mlink.value.trim();
-        aud.play().catch(() => alert('Failed to stream link'));
-    }
-}
-
-function ck(v) {
-    let s = document.getElementById('cs');
-    if (s) {
-        s.value = (s.value === '0' || s.value === 'Err') ? v : s.value + v;
-    }
-}
-
-function cc() {
-    let s = document.getElementById('cs');
-    if (s) s.value = '0';
-}
-
-function ce() {
-    let s = document.getElementById('cs');
-    if (s) {
-        try { s.value = eval(s.value); } catch { s.value = 'Err'; }
-    }
-}
-
-function buildCalendar() {
-    let now = new Date();
-    let year = now.getFullYear();
-    let month = now.getMonth();
-    let ct = document.getElementById('cal-title');
-    if (ct) ct.innerText = now.toLocaleString('default', { month: 'long', year: 'numeric' });
-    
-    let firstDay = new Date(year, month, 1).getDay();
-    let totalDays = new Date(year, month + 1, 0).getDate();
-    let grid = document.getElementById('cal-days');
-    if (!grid) return;
-    grid.innerHTML = '';
-    
-    for (let i = 0; i < firstDay; i++) {
-        let cell = document.createElement('div');
-        grid.appendChild(cell);
-    }
-    
-    for (let d = 1; d <= totalDays; d++) {
-        let cell = document.createElement('div');
-        cell.className = 'cal-cell' + (d === now.getDate() ? ' today' : '');
-        cell.innerText = d;
-        grid.appendChild(cell);
-    }
-}
-
-function makeDrag(el) {
-    let h = el.querySelector('.w-head');
-    if (!h) return;
-    h.onmousedown = e => {
-        if (e.target.closest('.w-ctrl')) return;
-        e.preventDefault();
-        
-        let startX = e.clientX;
-        let startY = e.clientY;
-        let rect = el.getBoundingClientRect();
-        let parentRect = document.getElementById('desktop').getBoundingClientRect();
-        
-        let startLeft = rect.left - parentRect.left;
-        let startTop = rect.top - parentRect.top;
-        
-        focusW(el.id.replace('w-', ''));
-
-        function onMouseMove(ev) {
-            let dx = ev.clientX - startX;
-            let dy = ev.clientY - startY;
-            el.style.left = (startLeft + dx) + 'px';
-            el.style.top = (startTop + dy) + 'px';
-        }
-        
-        function onMouseUp() {
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-        }
-        
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
+/* ---------- calculator ---------- */
+function calcApp(box){
+  var keys = ["C","(",")","/","7","8","9","*","4","5","6","-","1","2","3","+","0",".","DEL","="];
+  box.innerHTML = '<div class="calc"><div class="scr">0</div><div class="keys"></div></div>';
+  var scr = box.querySelector(".scr"), grid = box.querySelector(".keys"), expr = "";
+  keys.forEach(function(k){
+    var b = document.createElement("button"); b.className = "btn"; b.textContent = k;
+    b.onclick = function(){
+      if(k === "C") expr = "";
+      else if(k === "DEL") expr = expr.slice(0, -1);
+      else if(k === "="){
+        try{
+          if(!/^[0-9+\-*/.() ]+$/.test(expr)) throw 0;
+          var r = Function('"use strict";return (' + expr + ')')();
+          expr = String(Math.round(r * 1e10) / 1e10);
+        }catch(e){ expr = ""; scr.textContent = "Error"; return; }
+      }
+      else expr += k;
+      scr.textContent = expr || "0";
     };
-                    }
-        
+    grid.appendChild(b);
+  });
+}
+
+/* ---------- calendar ---------- */
+function calendarApp(box){
+  var now = new Date(), y = now.getFullYear(), m = now.getMonth();
+  var names = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  function draw(){
+    var first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
+    var h = '<div class="mh"><button class="btn" data-d="-1">&lt;</button><b>' + names[m] + ' ' + y + '</b><button class="btn" data-d="1">&gt;</button></div><table class="cal"><tr>';
+    ["Su","Mo","Tu","We","Th","Fr","Sa"].forEach(function(d){ h += "<th>" + d + "</th>"; });
+    h += "</tr><tr>";
+    for(var i = 0; i < first; i++) h += "<td></td>";
+    for(var d = 1; d <= days; d++){
+      var isToday = d === now.getDate() && m === now.getMonth() && y === now.getFullYear();
+      h += '<td' + (isToday ? ' class="today"' : '') + '>' + d + '</td>';
+      if((first + d) % 7 === 0 && d < days) h += "</tr><tr>";
+    }
+    box.innerHTML = h + "</tr></table>";
+    box.querySelectorAll("[data-d]").forEach(function(b){
+      b.onclick = function(){
+        m += Number(b.dataset.d);
+        if(m < 0){ m = 11; y--; } if(m > 11){ m = 0; y++; }
+        draw();
+      };
+    });
+  }
+  draw();
+}
+
+/* ---------- clock ---------- */
+function clockApp(box){
+  box.innerHTML = '<div class="clk"><canvas width="190" height="190"></canvas><div class="dig"></div></div>';
+  var c = box.querySelector("canvas"), g = c.getContext("2d"), dig = box.querySelector(".dig");
+  function hand(angle, len, width, color){
+    g.beginPath(); g.lineWidth = width; g.strokeStyle = color; g.lineCap = "round";
+    g.moveTo(95, 95);
+    g.lineTo(95 + len * Math.sin(angle), 95 - len * Math.cos(angle));
+    g.stroke();
+  }
+  function draw(){
+    if(!document.body.contains(c)){ clearInterval(t); return; }
+    var d = new Date();
+    g.clearRect(0, 0, 190, 190);
+    g.strokeStyle = "#c8963e";
+    for(var i = 0; i < 12; i++){
+      var a = i * Math.PI / 6;
+      g.beginPath(); g.lineWidth = 2;
+      g.moveTo(95 + 78 * Math.sin(a), 95 - 78 * Math.cos(a));
+      g.lineTo(95 + 88 * Math.sin(a), 95 - 88 * Math.cos(a));
+      g.stroke();
+    }
+    var s = d.getSeconds(), mi = d.getMinutes() + s / 60, h = (d.getHours() % 12) + mi / 60;
+    hand(h * Math.PI / 6, 45, 4, "#e8e2d0");
+    hand(mi * Math.PI / 30, 65, 3, "#e8e2d0");
+    hand(s * Math.PI / 30, 72, 1, "#c8963e");
+    dig.textContent = d.toLocaleTimeString();
+  }
+  var t = setInterval(draw, 1000); draw();
+}
+
+/* ---------- about ---------- */
+function aboutApp(box){
+  box.innerHTML = '<div class="about"><h1>TURBO OS</h1><p><b>Preetham</b></p><p>Turbo OS is a small operating system that runs inside a web page. I built it with plain HTML, CSS and JavaScript to see how far a browser tab can go: windows you can drag, a start menu, a terminal, a Wikipedia browser and a few everyday tools.</p><p>Version 1.0</p><p>&copy; 2026 Preetham. All rights reserved.</p></div>';
+}
+
+boot("Starting...");
+    
