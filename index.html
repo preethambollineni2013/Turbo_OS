@@ -1,29 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Turbo OS</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turbo OS - Desktop Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="boot"><h1>TURBO OS</h1><div class="pb"><i id="bar"></i></div><p id="bmsg">Starting...</p></div>
+    <!-- Main Desktop Environment -->
+    <div id="desktop">
+        
+        <!-- App Shortcut Icons -->
+        <div class="shortcuts-grid">
+            <div class="shortcut" onclick="openApp('clock-app')">
+                <span class="icon">🕒</span>
+                <span class="label">Clock</span>
+            </div>
+            <div class="shortcut" onclick="openApp('media-app')">
+                <span class="icon">🎵</span>
+                <span class="label">Media Player</span>
+            </div>
+            <div class="shortcut" onclick="openApp('browser-app')">
+                <span class="icon">🌐</span>
+                <span class="label">Turbo Browser</span>
+            </div>
+            <div class="shortcut" onclick="openApp('calc-app')">
+                <span class="icon">🧮</span>
+                <span class="label">Calculator</span>
+            </div>
+        </div>
 
-<div id="topclock"><span id="t1"></span><small id="t2"></small></div>
-<div id="desktop"><div id="icons"></div></div>
+        <!-- Dynamic Windows Ecosystem -->
+        <!-- 1. CLOCK WINDOW -->
+        <div id="clock-app" class="window hidden">
+            <div class="window-header">
+                <span class="window-title">🕒 Local Time</span>
+                <button class="close-btn" onclick="closeApp('clock-app')">×</button>
+            </div>
+            <div class="window-content">
+                <div id="live-clock-display">00:00:00 AM</div>
+            </div>
+        </div>
 
-<div id="menu">
-  <div class="head">Turbo OS</div>
-  <div id="mitems"></div>
-  <hr>
-  <div class="item" onclick="reboot()">Reboot</div>
-</div>
-<div id="taskbar">
-  <button class="btn" id="turbo">Turbo</button>
-  <div id="tasks"></div>
-</div>
+        <!-- 2. MEDIA PLAYER WINDOW -->
+        <div id="media-app" class="window hidden">
+            <div class="window-header">
+                <span class="window-title">🎵 Audio Deck</span>
+                <button class="close-btn" onclick="closeApp('media-app')">×</button>
+            </div>
+            <div class="window-content">
+                <div class="player-controls">
+                    <p id="track-status">No track playing</p>
+                    <button onclick="playDummyTrack()">Play / Pause</button>
+                </div>
+            </div>
+        </div>
 
-<script src="script.js"></script>
+        <!-- 3. TURBO BROWSER WINDOW -->
+        <div id="browser-app" class="window hidden">
+            <div class="window-header">
+                <span class="window-title">🌐 Turbo Web Browser</span>
+                <button class="close-btn" onclick="closeApp('browser-app')">×</button>
+            </div>
+            <div class="window-content">
+                <div class="browser-bar">
+                    <input type="text" id="url-input" value="https://hackclub.com" placeholder="Enter URL...">
+                    <button onclick="loadBrowserUrl()">Go</button>
+                </div>
+                <iframe id="browser-viewport" src="https://hackclub.com"></div>
+            </div>
+        </div>
+
+        <!-- 4. CALCULATOR WINDOW -->
+        <div id="calc-app" class="window hidden">
+            <div class="window-header">
+                <span class="window-title">🧮 Calculator</span>
+                <button class="close-btn" onclick="closeApp('calc-app')">×</button>
+            </div>
+            <div class="window-content">
+                <input type="text" id="calc-screen" readonly placeholder="0">
+                <div class="calc-buttons-layout">
+                    <!-- Standard grid layout injected here -->
+                    <button onclick="pressCalcKey('7')">7</button>
+                    <button onclick="pressCalcKey('8')">8</button>
+                    <button onclick="pressCalcKey('9')">9</button>
+                    <button onclick="pressCalcKey('/')">/</button>
+                    <br>
+                    <button onclick="pressCalcKey('4')">4</button>
+                    <button onclick="pressCalcKey('5')">5</button>
+                    <button onclick="pressCalcKey('6')">6</button>
+                    <button onclick="pressCalcKey('*')">*</button>
+                    <br>
+                    <button onclick="pressCalcKey('1')">1</button>
+                    <button onclick="pressCalcKey('2')">2</button>
+                    <button onclick="pressCalcKey('3')">3</button>
+                    <button onclick="pressCalcKey('-')">-</button>
+                    <br>
+                    <button onclick="clearCalcScreen()">C</button>
+                    <button onclick="pressCalcKey('0')">0</button>
+                    <button onclick="runCalcExecution()">=</button>
+                    <button onclick="pressCalcKey('+')">+</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom Desktop Navigation Taskbar -->
+    <div id="taskbar">
+        <div class="start-menu-trigger">⚡ Turbo OS</div>
+        <div class="active-tray-icons">
+            <!-- Dynamic tokens or active apps indicators can be populated here -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
-</html>
+                                                          </html>
+  
