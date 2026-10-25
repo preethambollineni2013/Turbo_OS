@@ -1,467 +1,190 @@
+/* ==========================================================================
+   Turbo OS Core Stylesheet (Built for Hack Club Star Dance!)
+   ========================================================================== */
+
 :root {
-  --bg: #000;
-  --panel: #262626;
-  --face: #333;
-  --line: #6b6b6b;
-  --hi: #8a8a8a;
-  --text: #e8e2d0;
-  --gold: #c8963e;
-  --dark: #141414;
+    --desktop-bg: #1e1e24;
+    --window-chrome: #2b2b36;
+    --accent-blue: #3b82f6;
+    --text-main: #f3f4f6;
+    --window-border: #4b5563;
 }
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-html,
-body {
-  height: 100%;
-  overflow: hidden;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--desktop-bg);
+    color: var(--text-main);
 }
 
-button,
-input {
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--text);
-}
-
-
+/* --- Desktop Workspace --- */
 #desktop {
-  position: absolute;
-  inset: 0 0 42px 0;
+    width: 100%;
+    height: calc(100% - 45px); /* Subtract taskbar height */
+    position: relative;
+    padding: 20px;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 0);
+    background-size: 24px 24px;
 }
 
-#icons {
-  position: absolute;
-  inset: 0;
+/* Shortcut Grid System */
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 20px;
+    max-width: 400px;
 }
 
-.icon {
-  position: absolute;
-  width: 76px;
-  padding: 6px 2px;
-  border: 1px solid transparent;
-  font-size: 12px;
-  text-align: center;
-  cursor: pointer;
-  user-select: none;
-  touch-action: none;
+.shortcut {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
 }
 
-.icon:hover {
-  border-color: var(--line);
-  background: #111;
+.shortcut:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
-.icon span {
-  display: block;
-  margin-bottom: 2px;
-  font-size: 30px;
+.shortcut .icon {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
 }
 
-
-#topclock {
-  position: fixed;
-  top: 8px;
-  right: 12px;
-  z-index: 9000;
-  padding: 5px 12px;
-  background: var(--dark);
-  border: 2px solid var(--line);
-  border-color: var(--hi) #333 #333 var(--hi);
-  color: var(--gold);
-  font-size: 22px;
-  font-weight: bold;
-  line-height: 1.15;
-  text-align: right;
+.shortcut .label {
+    font-size: 0.85rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-#topclock small {
-  display: block;
-  font-size: 13px;
-  color: var(--text);
+/* --- Window Layer Architecture --- */
+.window {
+    position: absolute;
+    min-width: 320px;
+    background: var(--window-chrome);
+    border: 1px solid var(--window-border);
+    border-radius: 6px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 10;
 }
 
+.window.hidden {
+    display: none !important;
+}
 
+.window-header {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--window-border);
+    cursor: move; /* Future update: drag capability */
+}
+
+.window-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.close-btn {
+    background: #ef4444;
+    border: none;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 18px;
+}
+
+.window-content {
+    padding: 15px;
+}
+
+/* --- Specific App Components --- */
+#live-clock-display {
+    font-size: 2rem;
+    text-align: center;
+    font-family: monospace;
+    color: #4ade80;
+}
+
+/* Browser UI */
+.browser-bar {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+#url-input {
+    flex: 1;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid var(--window-border);
+    background: #111;
+    color: #fff;
+}
+#browser-viewport {
+    width: 100%;
+    height: 250px;
+    border: 1px solid #111;
+    background: #fff;
+}
+
+/* Calc Frame UI */
+#calc-screen {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.5rem;
+    text-align: right;
+    margin-bottom: 10px;
+    background: #111;
+    border: 1px solid var(--window-border);
+    color: #fff;
+}
+.calc-buttons-layout button {
+    width: 22%;
+    margin: 1%;
+    padding: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    background: #3e3e4a;
+    border: none;
+    color: #fff;
+    border-radius: 4px;
+}
+
+/* --- Bottom Taskbar --- */
 #taskbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9000;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 42px;
-  padding: 4px 6px;
-  background: var(--panel);
-  border-top: 2px solid var(--hi);
+    width: 100%;
+    height: 45px;
+    background: #111116;
+    border-top: 1px solid var(--window-border);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    z-index: 100;
 }
 
-#tasks {
-  display: flex;
-  gap: 4px;
-  overflow: hidden;
-}
-
-.task {
-  max-width: 140px;
-  height: 32px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-
-.btn {
-  padding: 4px 12px;
-  background: var(--face);
-  border: 2px solid;
-  border-color: var(--hi) #111 #111 var(--hi);
-  cursor: pointer;
-}
-
-.btn:active,
-.btn.on {
-  background: #222;
-  border-color: #111 var(--hi) var(--hi) #111;
-}
-
-#turbo {
-  height: 32px;
-  color: var(--gold);
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-
-#menu {
-  position: fixed;
-  left: 6px;
-  bottom: 44px;
-  z-index: 9500;
-  display: none;
-  width: 210px;
-  background: var(--panel);
-  border: 2px solid;
-  border-color: var(--hi) #111 #111 var(--hi);
-}
-
-#menu.open {
-  display: block;
-}
-
-#menu .head {
-  padding: 10px;
-  background: linear-gradient(90deg, #5a3d10, #1a1a1a);
-  border-bottom: 1px solid var(--line);
-  color: var(--gold);
-  font-size: 16px;
-  font-weight: bold;
-}
-
-#menu div.item {
-  padding: 8px 14px;
-  cursor: pointer;
-}
-
-#menu div.item:hover {
-  background: var(--gold);
-  color: #000;
-}
-
-#menu hr {
-  margin: 3px 0;
-  border: 0;
-  border-top: 1px solid var(--line);
-}
-
-
-.win {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  min-width: 260px;
-  min-height: 160px;
-  background: var(--panel);
-  border: 2px solid;
-  border-color: var(--hi) #111 #111 var(--hi);
-  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.7);
-}
-
-.bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 6px;
-  background: linear-gradient(90deg, #3a2a0e, #1b1b1b);
-  color: #bbb;
-  font-size: 14px;
-  cursor: move;
-  user-select: none;
-  touch-action: none;
-}
-
-.win.active .bar {
-  background: linear-gradient(90deg, #8a6420, #2a2a2a);
-  color: #fff;
-}
-
-.bar b {
-  font-weight: normal;
-}
-
-.bar button {
-  width: 22px;
-  height: 20px;
-  margin-left: 3px;
-  padding: 0;
-  background: var(--face);
-  border: 2px solid;
-  border-color: var(--hi) #111 #111 var(--hi);
-  font-size: 12px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.body {
-  flex: 1;
-  overflow: auto;
-  margin: 3px;
-  padding: 8px;
-  background: var(--dark);
-  border: 2px solid;
-  border-color: #111 var(--hi) var(--hi) #111;
-}
-
-
-input[type=text] {
-  width: 100%;
-  padding: 5px 7px;
-  background: #000;
-  border: 2px solid;
-  border-color: #111 var(--hi) var(--hi) #111;
-}
-
-.row {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-
-.row .btn {
-  white-space: nowrap;
-}
-
-
-.res {
-  padding: 7px 4px;
-  border-bottom: 1px dotted var(--line);
-  cursor: pointer;
-}
-
-.res:hover {
-  background: #222;
-}
-
-.res h4 {
-  color: var(--gold);
-  font-size: 15px;
-}
-
-.res p {
-  color: #bbb;
-  font-size: 13px;
-}
-
-.article h2 {
-  margin-bottom: 8px;
-  color: var(--gold);
-}
-
-.article p {
-  margin-bottom: 10px;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-
-.term {
-  height: 100%;
-  background: #000;
-  color: #d6c9a0;
-  font-family: "Courier New", monospace;
-  font-size: 13px;
-}
-
-.term .out {
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.term .line {
-  display: flex;
-  gap: 6px;
-}
-
-.term input {
-  flex: 1;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  outline: 0;
-  color: #fff;
-  font-family: inherit;
-}
-
-.calc {
-  width: 230px;
-  margin: auto;
-}
-
-.calc .scr {
-  min-height: 50px;
-  margin-bottom: 8px;
-  padding: 8px;
-  overflow: hidden;
-  background: #000;
-  border: 2px solid;
-  border-color: #111 var(--hi) var(--hi) #111;
-  color: var(--gold);
-  font-size: 26px;
-  text-align: right;
-}
-
-.keys {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
-}
-
-.keys .btn {
-  padding: 10px 0;
-  font-size: 16px;
-}
-
-
-.cal {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: center;
-}
-
-.cal th {
-  padding: 5px;
-  border-bottom: 1px solid var(--line);
-  color: var(--gold);
-}
-
-.cal td {
-  padding: 8px 0;
-}
-
-.cal td.today {
-  background: var(--gold);
-  color: #000;
-  font-weight: bold;
-}
-
-.mh {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-  font-size: 17px;
-}
-
-
-.clk {
-  text-align: center;
-}
-
-.clk canvas {
-  background: #000;
-  border: 2px solid var(--line);
-  border-radius: 50%;
-}
-
-.clk .dig {
-  margin-top: 6px;
-  color: var(--gold);
-  font-size: 30px;
-  font-weight: bold;
-}
-
-
-video {
-  width: 100%;
-  max-height: 300px;
-  background: #000;
-}
-
-
-.about {
-  line-height: 1.55;
-  text-align: center;
-}
-
-.about h1 {
-  color: var(--gold);
-  font-size: 30px;
-  letter-spacing: 2px;
-}
-
-.about p {
-  margin: 10px 0;
-  font-size: 14px;
-}
-
-
-#boot {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  background: #000;
-}
-
-#boot h1 {
-  color: var(--gold);
-  font-size: 54px;
-  letter-spacing: 6px;
-}
-
-#boot .pb {
-  width: 260px;
-  height: 14px;
-  padding: 1px;
-  border: 2px solid var(--line);
-}
-
-#boot .pb i {
-  display: block;
-  width: 0;
-  height: 100%;
-  background: var(--gold);
-}
-
-#boot p {
-  color: #999;
-  font-size: 13px;
-}
-
-@media (max-width: 600px) {
-  #topclock {
-    font-size: 17px;
-  }
+.start-menu-trigger {
+    background: var(--accent-blue);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
       }
